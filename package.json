@@ -1,0 +1,20 @@
+{
+  "name": "automa",
+  "version": "1.0.0",
+  "description": "Easy and fast at building Dom element.",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc ./src/automa.ts --target es6 -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waux-team/automa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/waux-team/automa/issues"
+  },
+  "homepage": "https://github.com/waux-team/automa#readme"
+}
