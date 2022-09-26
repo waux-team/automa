@@ -1,5 +1,6 @@
 class Automa {
   public element: Object = {};
+  public debug:boolean = false;
   root(props: { name: string; child }): void {
     const root: HTMLElement | null = document.getElementById(
       props.name === undefined ? "root" : props.name
@@ -7,10 +8,12 @@ class Automa {
     root?.appendChild(props.child.target);
     return;
   }
+  regis(props){
+    this.element[props.elName] = props.component;
+  }
   arrange(instruction: string[]) {
     instruction.map((i) => {
       let spaceRemove = i.replace(/\s+/g, "");
-      console.log(spaceRemove);
       let tokens = spaceRemove.split("=");
       let parent = tokens[0];
       let child = tokens[1];
@@ -18,6 +21,9 @@ class Automa {
       childToken.map((i) => {
         this.pick(parent).children([this.pick(i)]);
       });
+      if(this.debug){
+        console.log(spaceRemove);
+      }
     });
   }
   parseToElement(strElList: string[]) {
@@ -137,5 +143,8 @@ class Automa {
       returnObj.modify(props.build);
     }
     return returnObj;
+  }
+  debugOn(){
+    this.debug = true;
   }
 }

@@ -1,16 +1,19 @@
 class Automa {
     constructor() {
         this.element = {};
+        this.debug = false;
     }
     root(props) {
         const root = document.getElementById(props.name === undefined ? "root" : props.name);
         root === null || root === void 0 ? void 0 : root.appendChild(props.child.target);
         return;
     }
+    regis(props) {
+        this.element[props.elName] = props.component;
+    }
     arrange(instruction) {
         instruction.map((i) => {
             let spaceRemove = i.replace(/\s+/g, "");
-            console.log(spaceRemove);
             let tokens = spaceRemove.split("=");
             let parent = tokens[0];
             let child = tokens[1];
@@ -18,6 +21,9 @@ class Automa {
             childToken.map((i) => {
                 this.pick(parent).children([this.pick(i)]);
             });
+            if (this.debug) {
+                console.log(spaceRemove);
+            }
         });
     }
     parseToElement(strElList) {
@@ -136,5 +142,8 @@ class Automa {
             returnObj.modify(props.build);
         }
         return returnObj;
+    }
+    debugOn() {
+        this.debug = true;
     }
 }
