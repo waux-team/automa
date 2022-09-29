@@ -1,6 +1,6 @@
 class Automa {
   public element: Object = {};
-  public debug:boolean = false;
+  public debug: boolean = false;
   root(props: { name: string; child }): void {
     const root: HTMLElement | null = document.getElementById(
       props.name === undefined ? "root" : props.name
@@ -8,7 +8,7 @@ class Automa {
     root?.appendChild(props.child.target);
     return;
   }
-  regis(props){
+  regis(props) {
     this.element[props.elName] = props.component;
   }
   arrange(instruction: string[]) {
@@ -21,7 +21,7 @@ class Automa {
       childToken.map((i) => {
         this.pick(parent).children([this.pick(i)]);
       });
-      if(this.debug){
+      if (this.debug) {
         console.log(spaceRemove);
       }
     });
@@ -70,36 +70,46 @@ class Automa {
       pick: this.isUndefined(props.pick, null),
       modify: function (callback: (target: HTMLElement, util) => void) {
         callback(this.target, this);
+        return this;
       },
       text: function (text) {
         this.target.textContent = text;
+        return this;
       },
       children: function (elList) {
         elList.map((i) => {
           this.target.appendChild(i.target);
           this.inner[i.propsName] = i;
         });
+        return this;
       },
       _children: function () {
         this.target.innerHTML = "";
+        return this;
       },
       style: function (styleProps) {
         Object.assign(this.target.style, styleProps);
+        return this;
       },
       _style: function () {
         this.attr("style", "");
+        return this;
       },
       class: function (classList: Array<String>) {
         this.target.classList.add(...[classList]);
+        return this;
       },
       _class: function () {
         this.attr("class", "");
+        return this;
       },
       action: function (eventProps, callback) {
         this.target.addEventListener(eventProps, callback, true);
+        return this;
       },
       _action: function (eventProps, callback) {
         this.target.remiveEventListener(eventProps, callback, true);
+        return this;
       },
       relationship: function () {
         let rs = this.propsName + "<" + this.elType + ">=";
@@ -111,6 +121,7 @@ class Automa {
       },
       attr: function (attrName, value) {
         this.target.setAttribute(attrName, value);
+        return this;
       },
     };
   }
@@ -134,7 +145,7 @@ class Automa {
       returnObj.text(props.text);
     }
     if (props.class !== undefined) {
-      returnObj.class([props.class]);
+      returnObj.class(props.class);
     }
     if (props.children !== undefined) {
       returnObj.children(props.children);
@@ -144,7 +155,7 @@ class Automa {
     }
     return returnObj;
   }
-  debugOn(){
+  debugOn() {
     this.debug = true;
   }
 }

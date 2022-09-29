@@ -69,36 +69,46 @@ class Automa {
             pick: this.isUndefined(props.pick, null),
             modify: function (callback) {
                 callback(this.target, this);
+                return this;
             },
             text: function (text) {
                 this.target.textContent = text;
+                return this;
             },
             children: function (elList) {
                 elList.map((i) => {
                     this.target.appendChild(i.target);
                     this.inner[i.propsName] = i;
                 });
+                return this;
             },
             _children: function () {
                 this.target.innerHTML = "";
+                return this;
             },
             style: function (styleProps) {
                 Object.assign(this.target.style, styleProps);
+                return this;
             },
             _style: function () {
                 this.attr("style", "");
+                return this;
             },
             class: function (classList) {
                 this.target.classList.add(...[classList]);
+                return this;
             },
             _class: function () {
                 this.attr("class", "");
+                return this;
             },
             action: function (eventProps, callback) {
                 this.target.addEventListener(eventProps, callback, true);
+                return this;
             },
             _action: function (eventProps, callback) {
                 this.target.remiveEventListener(eventProps, callback, true);
+                return this;
             },
             relationship: function () {
                 let rs = this.propsName + "<" + this.elType + ">=";
@@ -110,6 +120,7 @@ class Automa {
             },
             attr: function (attrName, value) {
                 this.target.setAttribute(attrName, value);
+                return this;
             },
         };
     }
@@ -133,7 +144,7 @@ class Automa {
             returnObj.text(props.text);
         }
         if (props.class !== undefined) {
-            returnObj.class([props.class]);
+            returnObj.class(props.class);
         }
         if (props.children !== undefined) {
             returnObj.children(props.children);
