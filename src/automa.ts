@@ -96,7 +96,7 @@ class Automa {
         return this;
       },
       class: function (classList: Array<String>) {
-        this.target.classList.add(...[classList]);
+        this.target.classList.add(...classList);
         return this;
       },
       _class: function () {
