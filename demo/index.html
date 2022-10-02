@@ -5,10 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .btn{
+            transition: 5s;
+            background: black;
+            color: white;
+            width: 200px;
+        }
+        .btn:hover{
+            width: 300px;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
-    <script src="../src/automa.js"></script>
-    <script src="./index.js"></script>
+    <script src="../dist/umd.js"></script>
+    <script type="module" src="../demo/index.js"></script>
 </body>
 </html>

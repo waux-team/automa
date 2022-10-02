@@ -1,6 +1,26 @@
-class Automa {
+export class Automa {
   public element: Object = {};
   public debug: boolean = false;
+  public classArr: object = {};
+  public classObj: object = {};
+  public cleanArr: string[] = [];
+  public innerCleanArr: string[] = [];
+  constructor(props) {
+    
+    if (props?.define) {
+      this.parseToElement(props.define);
+    }
+    if (props?.instruction) {
+      this.arrange(props.instruction);
+    }
+    if (props?.classArr) {
+      this.classArr = props.classArr;
+    }
+    if (props?.classObj) {
+      this.classObj = props.classObj;
+    }
+    
+  }
   root(props: { name: string; child }): void {
     const root: HTMLElement | null = document.getElementById(
       props.name === undefined ? "root" : props.name
@@ -8,23 +28,83 @@ class Automa {
     root?.appendChild(props.child.target);
     return;
   }
+  useOnly(props: string[]) {
+    let tempStore = {};
+    props.map((i) => {
+      tempStore[i] = this.element[i];
+    });
+    this.element = tempStore;
+  }
+  innerClean(props: string[]) {
+    props.map((i) => {
+      this.element[i]._inner();
+    });
+  }
+  clone(props) {
+    let cloneEl = this.buildInElementProps({
+      target: this.element[props].target.cloneNode(true),
+      propsName: this.element[props].propsName,
+      elType: this.element[props].elType,
+    });
+    cloneEl._children();
+    for (let i in this.element[props].inner) {
+      let el = this.element[props].inner[i].target.cloneNode(true);
+      cloneEl.target.appendChild(el);
+      cloneEl.inner[i] = this.buildInElementProps({
+        target: el,
+        propsName: this.element[props].inner[i].propsName,
+        elType: this.element[props].inner[i].elType,
+      });
+    }
+    return cloneEl;
+  }
   regis(props) {
     this.element[props.elName] = props.component;
+  }
+  defineClassArray(props) {
+    this.classArr = props;
+  }
+  defineClassObject(props) {
+    this.classObj = props;
   }
   arrange(instruction: string[]) {
     instruction.map((i) => {
       let spaceRemove = i.replace(/\s+/g, "");
       let tokens = spaceRemove.split("=");
-      let parent = tokens[0];
+      let parentToken =
+        tokens[0].split("-").length === 1 ? tokens[0] : tokens[0].split("-");
+
+      let flag = "";
+      let parent = parentToken;
+
+      if (typeof parentToken !== "string") {
+        flag = parentToken[0];
+        parent = parentToken[1];
+      }
+
+      if (flag === "u") {
+        this.cleanArr.push(parent as string);
+      }
+      if (flag === "ui") {
+        this.innerCleanArr.push(parent as string);
+        this.cleanArr.push(parent as string);
+      }
+
       let child = tokens[1];
       let childToken = child.split(",");
+
       childToken.map((i) => {
         this.pick(parent).children([this.pick(i)]);
       });
+
       if (this.debug) {
         console.log(spaceRemove);
       }
     });
+  }
+  clean() {
+    this.innerClean(this.innerCleanArr);
+    this.useOnly(this.cleanArr);
   }
   parseToElement(strElList: string[]) {
     const newArr = strElList.slice();
@@ -34,11 +114,29 @@ class Automa {
       let el = document.createElement(elType);
       el.classList.add(className);
 
+      let autoClass = (props) => {
+        let ca = this.classArr[props];
+        let co = this.classObj[props];
+
+        let typecheck = ca ? "array" : co ? "object" : null;
+
+        if (typecheck) {
+          if (typecheck === "array") {
+            el.classList.add(...ca);
+          } else {
+            Object.assign(el.style, co);
+          }
+        }
+        return this;
+      };
+
       this.element[propsName] = this.buildInElementProps({
         target: el,
         propsName: propsName,
         elType: elType,
       });
+
+      Object.assign(this.element[propsName], { class_a: autoClass });
     });
   }
   parseToCarmelCase(str: string) {
@@ -68,6 +166,10 @@ class Automa {
       elType: this.isUndefined(props.elType, null),
       inner: this.isUndefined(props.inner, {}),
       pick: this.isUndefined(props.pick, null),
+      _inner: function () {
+        this.inner = {};
+        return this;
+      },
       modify: function (callback: (target: HTMLElement, util) => void) {
         callback(this.target, this);
         return this;

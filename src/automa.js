@@ -1,21 +1,89 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Automa = void 0;
 class Automa {
-    constructor() {
+    constructor(props) {
         this.element = {};
         this.debug = false;
+        this.classArr = {};
+        this.classObj = {};
+        this.cleanArr = [];
+        this.innerCleanArr = [];
+        if (props === null || props === void 0 ? void 0 : props.define) {
+            this.parseToElement(props.define);
+        }
+        if (props === null || props === void 0 ? void 0 : props.instruction) {
+            this.arrange(props.instruction);
+        }
+        if (props === null || props === void 0 ? void 0 : props.classArr) {
+            this.classArr = props.classArr;
+        }
+        if (props === null || props === void 0 ? void 0 : props.classObj) {
+            this.classObj = props.classObj;
+        }
     }
     root(props) {
         const root = document.getElementById(props.name === undefined ? "root" : props.name);
         root === null || root === void 0 ? void 0 : root.appendChild(props.child.target);
         return;
     }
+    useOnly(props) {
+        let tempStore = {};
+        props.map((i) => {
+            tempStore[i] = this.element[i];
+        });
+        this.element = tempStore;
+    }
+    innerClean(props) {
+        props.map((i) => {
+            this.element[i]._inner();
+        });
+    }
+    clone(props) {
+        let cloneEl = this.buildInElementProps({
+            target: this.element[props].target.cloneNode(true),
+            propsName: this.element[props].propsName,
+            elType: this.element[props].elType,
+        });
+        cloneEl._children();
+        for (let i in this.element[props].inner) {
+            let el = this.element[props].inner[i].target.cloneNode(true);
+            cloneEl.target.appendChild(el);
+            cloneEl.inner[i] = this.buildInElementProps({
+                target: el,
+                propsName: this.element[props].inner[i].propsName,
+                elType: this.element[props].inner[i].elType,
+            });
+        }
+        return cloneEl;
+    }
     regis(props) {
         this.element[props.elName] = props.component;
+    }
+    defineClassArray(props) {
+        this.classArr = props;
+    }
+    defineClassObject(props) {
+        this.classObj = props;
     }
     arrange(instruction) {
         instruction.map((i) => {
             let spaceRemove = i.replace(/\s+/g, "");
             let tokens = spaceRemove.split("=");
-            let parent = tokens[0];
+            let parentToken = tokens[0].split("-").length === 1 ? tokens[0] : tokens[0].split("-");
+            let flag = "";
+            let parent = parentToken;
+            if (typeof parentToken !== "string") {
+                flag = parentToken[0];
+                parent = parentToken[1];
+            }
+            if (flag === "u") {
+                this.cleanArr.push(parent);
+            }
+            if (flag === "ui") {
+                this.innerCleanArr.push(parent);
+                this.cleanArr.push(parent);
+            }
             let child = tokens[1];
             let childToken = child.split(",");
             childToken.map((i) => {
@@ -26,17 +94,36 @@ class Automa {
             }
         });
     }
+    clean() {
+        this.innerClean(this.innerCleanArr);
+        this.useOnly(this.cleanArr);
+    }
     parseToElement(strElList) {
         const newArr = strElList.slice();
         newArr.map((rawList) => {
             const { propsName, className, elType } = this.parseToCarmelCase(rawList);
             let el = document.createElement(elType);
             el.classList.add(className);
+            let autoClass = (props) => {
+                let ca = this.classArr[props];
+                let co = this.classObj[props];
+                let typecheck = ca ? "array" : co ? "object" : null;
+                if (typecheck) {
+                    if (typecheck === "array") {
+                        el.classList.add(...ca);
+                    }
+                    else {
+                        Object.assign(el.style, co);
+                    }
+                }
+                return this;
+            };
             this.element[propsName] = this.buildInElementProps({
                 target: el,
                 propsName: propsName,
                 elType: elType,
             });
+            Object.assign(this.element[propsName], { class_a: autoClass });
         });
     }
     parseToCarmelCase(str) {
@@ -67,6 +154,10 @@ class Automa {
             elType: this.isUndefined(props.elType, null),
             inner: this.isUndefined(props.inner, {}),
             pick: this.isUndefined(props.pick, null),
+            _inner: function () {
+                this.inner = {};
+                return this;
+            },
             modify: function (callback) {
                 callback(this.target, this);
                 return this;
@@ -158,3 +249,4 @@ class Automa {
         this.debug = true;
     }
 }
+exports.Automa = Automa;
