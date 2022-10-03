@@ -113,7 +113,7 @@ export class Automa {
       let tokens = rawList.split("-.");
       let rawlists = tokens[0];
       let classlist = [""];
-      console.log(rawlists);
+  
       const { propsName, className, elType } = this.parseToCarmelCase(rawlists);
 
       let el = document.createElement(elType);
