@@ -5,9 +5,8 @@ module.exports = [
     name: "umd",
     entry: "./src/automa.js",
     output: {
-      path: path.resolve(__dirname, "dist"),
       filename: "umd.js",
-      library: "Automa",
+      path: path.resolve(__dirname, "dist/automa"),
       libraryTarget: "umd",
     },
     mode: "production",
@@ -18,6 +17,16 @@ module.exports = [
     output: {
       path: path.resolve(__dirname, "demo"),
       filename: "index.bundle.js",
+    },
+    mode: "production",
+  },
+  {
+    name: "comumd",
+    entry: "./src/component.js",
+    output: {
+      filename: "umd.js",
+      path: path.resolve(__dirname, "dist/component/"),
+      libraryTarget: "umd",
     },
     mode: "production",
   },

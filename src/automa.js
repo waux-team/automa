@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Automa = void 0;
-class Automa {
+export class Automa {
     constructor(props) {
         this.element = {};
         this.debug = false;
@@ -9,23 +6,26 @@ class Automa {
         this.classObj = {};
         this.cleanArr = [];
         this.innerCleanArr = [];
-        if (props === null || props === void 0 ? void 0 : props.define) {
-            this.parseToElement(props.define);
-        }
-        if (props === null || props === void 0 ? void 0 : props.instruction) {
-            this.arrange(props.instruction);
-        }
         if (props === null || props === void 0 ? void 0 : props.classArr) {
             this.classArr = props.classArr;
         }
         if (props === null || props === void 0 ? void 0 : props.classObj) {
             this.classObj = props.classObj;
         }
+        if (props === null || props === void 0 ? void 0 : props.define) {
+            this.define(props.define);
+        }
+        if (props === null || props === void 0 ? void 0 : props.arrange) {
+            this.arrange(props.arrange);
+        }
     }
     root(props) {
         const root = document.getElementById(props.name === undefined ? "root" : props.name);
         root === null || root === void 0 ? void 0 : root.appendChild(props.child.target);
         return;
+    }
+    define(props) {
+        this.parseToElement(props);
     }
     useOnly(props) {
         let tempStore = {};
@@ -101,7 +101,11 @@ class Automa {
     parseToElement(strElList) {
         const newArr = strElList.slice();
         newArr.map((rawList) => {
-            const { propsName, className, elType } = this.parseToCarmelCase(rawList);
+            let tokens = rawList.split("-.");
+            let rawlists = tokens[0];
+            let classlist = [""];
+            console.log(rawlists);
+            const { propsName, className, elType } = this.parseToCarmelCase(rawlists);
             let el = document.createElement(elType);
             el.classList.add(className);
             let autoClass = (props) => {
@@ -124,6 +128,12 @@ class Automa {
                 elType: elType,
             });
             Object.assign(this.element[propsName], { class_a: autoClass });
+            if (tokens.length === 2) {
+                classlist = tokens[1].split(",");
+                classlist.map(i => {
+                    this.element[propsName].class_a(i);
+                });
+            }
         });
     }
     parseToCarmelCase(str) {
@@ -218,7 +228,7 @@ class Automa {
     pick(propsName) {
         return this.element[propsName];
     }
-    component(props) {
+    createElement(props) {
         let returnObj = this.buildInElementProps({});
         if (props.el !== undefined) {
             let { propsName, className, elType } = this.parseToCarmelCase(props.el);
@@ -249,4 +259,3 @@ class Automa {
         this.debug = true;
     }
 }
-exports.Automa = Automa;

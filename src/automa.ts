@@ -6,20 +6,18 @@ export class Automa {
   public cleanArr: string[] = [];
   public innerCleanArr: string[] = [];
   constructor(props) {
-    
-    if (props?.define) {
-      this.parseToElement(props.define);
-    }
-    if (props?.instruction) {
-      this.arrange(props.instruction);
-    }
     if (props?.classArr) {
       this.classArr = props.classArr;
     }
     if (props?.classObj) {
       this.classObj = props.classObj;
     }
-    
+    if (props?.define) {
+      this.define(props.define);
+    }
+    if (props?.arrange) {
+      this.arrange(props.arrange);
+    }
   }
   root(props: { name: string; child }): void {
     const root: HTMLElement | null = document.getElementById(
@@ -27,6 +25,9 @@ export class Automa {
     );
     root?.appendChild(props.child.target);
     return;
+  }
+  define(props){
+    this.parseToElement(props);
   }
   useOnly(props: string[]) {
     let tempStore = {};
@@ -109,7 +110,11 @@ export class Automa {
   parseToElement(strElList: string[]) {
     const newArr = strElList.slice();
     newArr.map((rawList) => {
-      const { propsName, className, elType } = this.parseToCarmelCase(rawList);
+      let tokens = rawList.split("-.");
+      let rawlists = tokens[0];
+      let classlist = [""];
+      console.log(rawlists);
+      const { propsName, className, elType } = this.parseToCarmelCase(rawlists);
 
       let el = document.createElement(elType);
       el.classList.add(className);
@@ -137,6 +142,14 @@ export class Automa {
       });
 
       Object.assign(this.element[propsName], { class_a: autoClass });
+
+      if(tokens.length === 2){
+        classlist = tokens[1].split(",");
+        classlist.map(i=>{
+          this.element[propsName].class_a(i)
+        })
+      }
+
     });
   }
   parseToCarmelCase(str: string) {
@@ -230,7 +243,7 @@ export class Automa {
   pick(propsName) {
     return this.element[propsName];
   }
-  component(props) {
+  createElement(props) {
     let returnObj = this.buildInElementProps({});
     if (props.el !== undefined) {
       let { propsName, className, elType } = this.parseToCarmelCase(props.el);

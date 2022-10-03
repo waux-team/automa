@@ -1,11 +1,5 @@
-const DEFINE = ["message-container-div", "message-text-p", "container-div"];
-
-const INSTRUCTION = [
-  "messageContainer = messageText",
-  "ui-container = messageContainer",
-];
-
-const CLASS_OBJ = {
+const am = new Automa();
+am.defineClassObject({
   containerBlack: {
     backgroundColor: "#000000",
     width: "200px",
@@ -14,17 +8,19 @@ const CLASS_OBJ = {
     borderRadius: "7px",
     color: "#ffff",
   },
-};
-
-const CLASS_ARR = {
-  containerRed: ["btn"],
-};
-const am = new Automa.Automa({
-  define: DEFINE,
-  instruction: INSTRUCTION,
-  classObj: CLASS_OBJ,
-  classArr: CLASS_ARR,
+  colorRed: {
+    color: "red",
+  },
 });
+am.parseToElement([
+  "message-container-div-.containerBlack,colorRed",
+  "message-text-p",
+  "container-div",
+]);
+am.arrange([
+  "messageContainer = messageText",
+  "ui-container = messageContainer",
+]);
 
 function widthAnimation(target, from, to, speed) {
   let counter = from;
@@ -40,6 +36,7 @@ function widthAnimation(target, from, to, speed) {
     }
   }, speed);
 }
+
 const extendEvent = (el, mod) => {
   mod.action("mouseenter", (ev) => {
     widthAnimation(el, 200, 300, 1);
@@ -49,23 +46,11 @@ const extendEvent = (el, mod) => {
   });
 };
 
-am.pick("messageContainer")
-  .modify(extendEvent)
-  // .class_a("containerRed")
-  .class_a("containerBlack");
+am.pick("messageContainer").modify(extendEvent);
 
-am.pick("messageText").text("Hello World!").style({
-  margin: "0",
-  width: "100%",
-});
-
-let messageContainer2 = am.clone("messageContainer").modify(extendEvent);
-
-am.pick("container").children([messageContainer2]);
+am.pick("messageText").text("Hello World!");
 
 am.clean();
-
-console.log(am.element);
 
 am.root({
   child: am.pick("container"),

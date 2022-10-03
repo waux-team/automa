@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Easy and fast at building Dom element.",
   "scripts": {
-    "normal": "tsc ./src/automa.ts --target es6 --module none",
+    "normal": "tsc ./src/automa.ts --target es6 --strict false",
     "umd": "npx webpack --config ./webpack.config.js --config-name umd",
     "bundle": "npx webpack --config ./webpack.config.js --config-name bundle",
-    "automate": "npm run normal && npm run umd"
+    "automate": "npm run normal && npm run umd",
+    "com-normal": "tsc ./src/component.ts --target es6 --strict false"  ,
+    "com-umd": "npx webpack --config ./webpack.config.js --config-name comumd"
+
   },
   "repository": {
     "type": "git",
