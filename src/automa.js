@@ -25,7 +25,7 @@ export class Automa {
         return;
     }
     define(props) {
-        this.parseToElement(props);
+        this.element = this.parseToElement(props);
     }
     useOnly(props) {
         let tempStore = {};
@@ -98,42 +98,44 @@ export class Automa {
         this.innerClean(this.innerCleanArr);
         this.useOnly(this.cleanArr);
     }
+    cel(type) {
+        return document.createElement(type);
+    }
+    autoClass(props) {
+        let ca = this.classArr[props.class];
+        let co = this.classObj[props.class];
+        if (ca) {
+            props.el.target.classList.add(...ca);
+        }
+        if (co) {
+            Object.assign(props.el.target.style, co);
+        }
+    }
     parseToElement(strElList) {
+        /** element-name-elType-.classArr or classObj */
         const newArr = strElList.slice();
+        const element = {};
         newArr.map((rawList) => {
             let tokens = rawList.split("-.");
+            /** element-name-elType*/
             let rawlists = tokens[0];
             let classlist = [""];
             const { propsName, className, elType } = this.parseToCarmelCase(rawlists);
-            let el = document.createElement(elType);
+            let el = this.cel(elType);
             el.classList.add(className);
-            let autoClass = (props) => {
-                let ca = this.classArr[props];
-                let co = this.classObj[props];
-                let typecheck = ca ? "array" : co ? "object" : null;
-                if (typecheck) {
-                    if (typecheck === "array") {
-                        el.classList.add(...ca);
-                    }
-                    else {
-                        Object.assign(el.style, co);
-                    }
-                }
-                return this;
-            };
-            this.element[propsName] = this.buildInElementProps({
+            element[propsName] = this.buildInElementProps({
                 target: el,
                 propsName: propsName,
                 elType: elType,
             });
-            Object.assign(this.element[propsName], { class_a: autoClass });
             if (tokens.length === 2) {
                 classlist = tokens[1].split(",");
-                classlist.map(i => {
-                    this.element[propsName].class_a(i);
+                classlist.map((i) => {
+                    this.autoClass({ el: element[propsName], class: i });
                 });
             }
         });
+        return element;
     }
     parseToCarmelCase(str) {
         let tokens = str.split("-");
