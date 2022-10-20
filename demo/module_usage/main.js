@@ -1,7 +1,6 @@
-import { debugOn, config, pick, root, Automa } from "../../src/automa.js";
-import { specialBtn } from "./button.js";
+import {config, createElement, pick, root} from "../../src/automa.js";
 
-debugOn();
+// debugOn();
 config({
   class2: {
     red: {
@@ -16,12 +15,17 @@ config({
   ],
   arrange: [
     "messageContainer = messageText",
-    "ui-container = messageContainer",
   ],
 });
 
-Automa.pick("container").children([specialBtn]);
+const con = createElement({
+  pick: pick("container"),
+})
+
+con.children([pick("messageContainer")]);
+
+pick("messageText").text("Hola");
 
 root({
-  child: pick("container"),
+  child: con,
 });

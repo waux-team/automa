@@ -5,15 +5,25 @@ let classObj = {};
 let cleanArr = [];
 let innerCleanArr = [];
 
+export function addClass(el, list) {
+  el.classList.add(...list);
+}
+export function assignObj(target, assign) {
+  Object.assign(target, assign);
+}
+export function elementID(name) {
+  return document.getElementById(name);
+}
+export function cel(type) {
+  return document.createElement(type);
+}
 export function root(props) {
-  const root = document.getElementById(
-    props.name === undefined ? "root" : props.name
-  );
-  root === null || root === void 0
-    ? void 0
+  const root = elementID(props.name === undefined ? "root" : props.name);
+  root === null || root === undefined
+    ? undefined
     : root.appendChild(props.child.target);
 
-  props.clean === void 0 || props.clean === null || props.clean === true
+  props.clean === undefined || props.clean === null || props.clean === true
     ? clean()
     : null;
 }
@@ -24,16 +34,16 @@ export function class2(props) {
   classObj = props;
 }
 export function config(props) {
-  if (props === null || props === void 0 ? void 0 : props.class1) {
-    Object.assign(classArr, props.class1);
+  if (props === null || props === undefined ? undefined : props.class1) {
+    assignObj(classArr, props.class1);
   }
-  if (props === null || props === void 0 ? void 0 : props.class2) {
-    Object.assign(classObj, props.class2);
+  if (props === null || props === undefined ? undefined : props.class2) {
+    assignObj(classObj, props.class2);
   }
-  if (props === null || props === void 0 ? void 0 : props.define) {
+  if (props === null || props === undefined ? undefined : props.define) {
     define(props.define);
   }
-  if (props === null || props === void 0 ? void 0 : props.arrange) {
+  if (props === null || props === undefined ? undefined : props.arrange) {
     arrange(props.arrange);
   }
 }
@@ -53,7 +63,7 @@ export function parseToElement(list) {
     let classlist = [""];
     const { propsName, className, elType } = parseToCarmelCase(rawlists);
     let el = cel(elType);
-    el.classList.add(className);
+    addClass(el, [className]);
     element[propsName] = buildInElementProps({
       target: el,
       propsName: propsName,
@@ -97,9 +107,6 @@ export function setInstruction(parsedEl, instruction) {
     }
   });
 }
-export function cel(type) {
-  return document.createElement(type);
-}
 export function parseToCarmelCase(str) {
   let tokens = str.split("-");
   let elementType = tokens.splice(tokens.length - 1, 1);
@@ -117,84 +124,92 @@ export function parseToCarmelCase(str) {
     elType: elementType[0],
   };
 }
-export function isUndefined(props, trueValue) {
-  return props === undefined ? trueValue : props;
+export function undef(props, option) {
+  return props === undefined ? (option ? option : null) : props;
 }
 export function buildInElementProps(props) {
-  return {
-    target: isUndefined(props.target, null),
-    propsName: isUndefined(props.propsName, null),
-    elType: isUndefined(props.elType, null),
-    inner: isUndefined(props.inner, {}),
-    pick: isUndefined(props.pick, null),
-    _inner: function () {
-      this.inner = {};
-      return this;
-    },
-    modify: function (callback) {
-      callback(this.target, this);
-      return this;
-    },
-    text: function (text) {
-      this.target.textContent = text;
-      return this;
-    },
-    children: function (elList) {
-      elList.map((i) => {
-        this.target.appendChild(i.target);
-        this.inner[i.propsName] = i;
-      });
-      return this;
-    },
-    _children: function () {
-      this.target.innerHTML = "";
-      return this;
-    },
-    style: function (styleProps) {
-      Object.assign(this.target.style, styleProps);
-      return this;
-    },
-    _style: function () {
-      this.attr("style", "");
-      return this;
-    },
-    class: function (classList) {
-      this.target.classList.add(...classList);
-      return this;
-    },
-    _class: function () {
-      this.attr("class", "");
-      return this;
-    },
-    action: function (eventProps, callback) {
-      this.target.addEventListener(eventProps, callback, true);
-      return this;
-    },
-    _action: function (eventProps, callback) {
-      this.target.removeEventListener(eventProps, callback, true);
-      return this;
-    },
-    relationship: function () {
-      let rs = propsName + "<" + elType + ">=";
-      for (let i in inner) {
-        rs += "," + this.inner[i].propsName + "<" + this.inner[i].elType + ">";
-      }
-      return rs.replace("=,", "=");
-    },
-    attr: function (attrName, value) {
-      this.target.setAttribute(attrName, value);
-      return this;
-    },
+  const returnObj = {};
+
+  returnObj.target = undef(props.target);
+  returnObj.propsName = undef(props.propsName);
+  returnObj.elType = undef(props.elType);
+  returnObj.pick = function (props) {
+    if (props) {
+      assignObj(this, props);
+    }
+    return this;
   };
+  returnObj.text = function (text) {
+    this.target.textContent = text;
+    return this;
+  };
+  returnObj.inner = undef(props.inner, {});
+  returnObj._inner = function () {
+    this.inner = {};
+    return this;
+  };
+  returnObj.modify = function (callback) {
+    callback(this.target, this);
+    return this;
+  };
+  returnObj.children = function (elList) {
+    elList.map((i) => {
+      this.target.appendChild(i.target);
+      this.inner[i.propsName] = i;
+    });
+    return this;
+  };
+  returnObj._children = function () {
+    this.target.innerHTML = "";
+    return this;
+  };
+  returnObj.style = function (styleObj) {
+    Object.assign(this.target.style, styleObj);
+    return this;
+  };
+  returnObj._style = function () {
+    this.attr("style", "");
+    return this;
+  };
+  returnObj.rs = function () {
+    let parent = `${this.propsName}<${this.elType}> =`;
+    for (let i in this.inner) {
+      let child = this.inner[i].propsName;
+      let childType = this.inner[i].elType;
+      parent += `, ${child}<${childType}>`;
+    }
+    return parent.replace("=,", "=");
+  };
+  returnObj.attr = function (attrName, value) {
+    this.target.setAttribute(attrName, value);
+    return this;
+  };
+  returnObj.class = function (classList) {
+    this.target.classList.add(...classList);
+    return this;
+  };
+  returnObj._class = function () {
+    this.attr("class", "");
+    return this;
+  };
+  returnObj.action = function (eventProps, callback) {
+    this.target.addEventListener(eventProps, callback, true);
+    return this;
+  };
+  returnObj._action = function (eventProps, callback) {
+    this.target.removeEventListener(eventProps, callback, true);
+    return this;
+  };
+  return returnObj;
 }
 export function autoClass(props) {
   let ca = classArr[props.class];
   let co = classObj[props.class];
   if (ca) {
-    props.el.target.classList.add(...ca);
+    addClass(props.el.target, ca);
   }
   if (co) {
-    Object.assign(props.el.target.style, co);
+    assignObj(props.el.target.style, co);
   }
 }
 export function useOnly(props) {
@@ -210,7 +225,7 @@ export function innerClean(props) {
   });
 }
 export function regis(props) {
-  element[props.elName] = props.el;
+  element[props.name] = props.el;
 }
 export function clean() {
   innerClean(innerCleanArr);
@@ -227,7 +242,7 @@ export function createElement(props) {
     returnObj.elType = elType;
   }
   if (props.pick !== undefined) {
-    returnObj = props.pick;
+    returnObj.pick(props.pick);
   }
   if (props.text !== undefined) {
     returnObj.text(props.text);
@@ -258,26 +273,15 @@ export function getElementList() {
   return element;
 }
 export const Automa = {
-  config,
-  root,
-  define,
-  arrange,
-  setInstruction,
+  addClass,
+  assignObj,
+  elementID,
   cel,
   parseToElement,
-  parseToCarmelCase,
-  isUndefined,
+  setInstruction,
+  undef,
   buildInElementProps,
   autoClass,
-  useOnly,
-  innerClean,
-  regis,
-  class1,
-  class2,
-  clean,
   createElement,
-  debugOn,
-  pick,
   setElement,
-  getElementList,
 };
