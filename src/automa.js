@@ -56,6 +56,7 @@ export function arrange(instruction) {
 export function parseToElement(list) {
   /** element-name-elType-.classArr or classObj */
   const ls = list.slice();
+  const els = {};
   ls.map((rawList) => {
     let tokens = rawList.split("-.");
     /** element-name-elType*/
@@ -64,7 +65,7 @@ export function parseToElement(list) {
     const { propsName, className, elType } = parseToCarmelCase(rawlists);
     let el = cel(elType);
     addClass(el, [className]);
-    element[propsName] = buildInElementProps({
+    els[propsName] = buildInElementProps({
       target: el,
       propsName: propsName,
       elType: elType,
@@ -72,11 +73,11 @@ export function parseToElement(list) {
     if (tokens.length === 2) {
       classlist = tokens[1].split(",");
       classlist.map((i) => {
-        autoClass({ el: element[propsName], class: i });
+        autoClass({ el: els[propsName], class: i });
       });
     }
   });
-  return element;
+  return els;
 }
 export function setInstruction(parsedEl, instruction) {
   instruction.map((i) => {
