@@ -22,9 +22,10 @@ const con = createElement({
   pick: pick("container"),
 })
 
+
 con.children([pick("messageContainer")]);
 
-pick("messageText").text("Hola");
+pick("messageText").text("Holai").class(["text-bold"])._class();
 
 root({
   child: con,

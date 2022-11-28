@@ -12,12 +12,22 @@ module.exports = [
     mode: "production",
   },
   {
-    name: "bundle",
+    name: "bundle:build",
     entry: "./demo/module_usage/main.js",
     output: {
       path: path.resolve(__dirname, "demo/module_usage/"),
       filename: "main.bundle.js",
     },
     mode: "production",
+  },
+  {
+    name: "bundle:watch",
+    entry: "./demo/module_usage/main.js",
+    watch: true,
+    output: {
+      path: path.resolve(__dirname, "demo/module_usage/"),
+      filename: "main.bundle.js",
+    },
+    mode: "development",
   },
 ];

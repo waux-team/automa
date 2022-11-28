@@ -1,17 +1,17 @@
 {
-  "name": "automa",
-  "version": "1.0.0",
+  "name": "@waux/automa",
+  "version": "1.5.0",
   "description": "Easy and fast at building Dom element.",
   "scripts": {
     "umd": "npx webpack --config ./webpack.config.js --config-name umd",
-    "bundle": "npx webpack --config ./webpack.config.js --config-name bundle"
-
+    "bundle:build": "npx webpack --config ./webpack.config.js --config-name bundle:build",
+    "bundle:watch": "npx webpack --config ./webpack.config.js --config-name bundle:watch"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/waux-team/automa.git"
   },
-  "keywords": [],
+  "keywords": ["dom","javascript"],
   "author": "",
   "license": "MIT",
   "bugs": {

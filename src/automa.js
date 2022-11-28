@@ -8,6 +8,9 @@ let innerCleanArr = [];
 export function addClass(el, list) {
   el.classList.add(...list);
 }
+export function createStyle(styleObj){
+  return styleObj;
+}
 export function assignObj(target, assign) {
   Object.assign(target, assign);
 }
@@ -185,13 +188,23 @@ export function buildInElementProps(props) {
     this.target.setAttribute(attrName, value);
     return this;
   };
+  returnObj._attr = function (attrName) {
+    this.target.removeAttribute(attrName);
+    return this;
+  };
   returnObj.class = function (classList) {
     this.target.classList.add(...classList);
     return this;
   };
-  returnObj._class = function () {
-    this.attr("class", "");
-    return this;
+  returnObj._class = function (remove) {
+    if (remove) {
+      remove.map((i) => {
+        this.target.classList.remove(i);
+      });
+    } else {
+      this._attr("class");
+      return this;
+    }
   };
   returnObj.action = function (eventProps, callback) {
     this.target.addEventListener(eventProps, callback, true);
